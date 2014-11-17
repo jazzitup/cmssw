@@ -126,6 +126,7 @@ private:
   std::ofstream out_m;
   std::string fMFileName;
 
+  std::string g4Label;
 
   TTree* hydjetTree_;
   HydjetEvent hev_;
@@ -154,6 +155,9 @@ private:
 
   edm::ESHandle < ParticleDataTable > pdt;
   edm::Service<TFileService> f;
+
+
+
 };
 //
 //
@@ -190,6 +194,8 @@ HiGenAnalyzer::HiGenAnalyzer(const edm::ParameterSet& iConfig)
   doParticles_ = iConfig.getUntrackedParameter<Bool_t>("doParticles", true);
   vector<int> defaultPDGs;
   motherDaughterPDGsToSave_ = iConfig.getUntrackedParameter<std::vector<int> >("motherDaughterPDGsToSave",defaultPDGs);
+
+  g4Label = iConfig.getUntrackedParameter<std::string>("ModuleLabel","g4SimHits");
 }
 
 
@@ -448,7 +454,8 @@ HiGenAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   if(doVertex_){
     edm::Handle<edm::SimVertexContainer> simVertices;
-    iEvent.getByType<edm::SimVertexContainer>(simVertices);
+    //    iEvent.getByType<edm::SimVertexContainer>(simVertices);  // getByType depreciated in CMSSW_7XY
+    iEvent.getByLabel(g4Label,simVertices);
 
     if (! simVertices.isValid() ) throw cms::Exception("FatalError") << "No vertices found\n";
     //Int_t inum = 0;

@@ -39,16 +39,18 @@ vector<int> matchTpToGen(const edm::Event& iEvent, const TrackingParticle* tpart
 
     vector<int> retArr;
     if(!tparticle){ retArr.push_back(-999); return retArr; }
-    vector<HepMC::GenParticle> tempStore;
+    //    vector<HepMC::GenParticle> tempStore;  // fixed by Y. Kim
+    vector<reco::GenParticle> tempStore;
     for(TrackingParticle::genp_iterator igen=tparticle->genParticle_begin(); igen!=tparticle->genParticle_end(); igen++){
-        const HepMC::GenParticle* temp = igen->get();
+      //      const HepMC::GenParticle* temp = igen->get(); // fixed by Y. Kim
+      const reco::GenParticle* temp = igen->get(); // fixed by Y. Kim
         tempStore.push_back(*temp); //temp->momentum().px()*temp->momentum().py()*temp->momentum().pz(); //store HepMC barcode for unique id
     }
 
     //now figure out the array number of the associated genParticles
     bool *tripwire = new bool[tempStore.size()];
     for(unsigned int ii=0; ii<tempStore.size(); ii++){ tripwire[ii]=0; } //reset tripwires
-
+    
     edm::Handle<reco::GenParticleCollection> parts;
     iEvent.getByLabel((edm::InputTag)genCollection,parts);
     for(unsigned int igenCand=0; igenCand<tempStore.size(); igenCand++){
@@ -57,9 +59,11 @@ vector<int> matchTpToGen(const edm::Event& iEvent, const TrackingParticle* tpart
             if(tripwire[igenCand]) continue;
             //there's no equivalence operator for genParticle!! This is a workaround since the stupid things are floats
             //if(p.px()*p.py()*p.pz() == tempStore.at(igenCand).momentum().px()*tempStore.at(igenCand).momentum().py()*tempStore.at(igenCand).momentum().pz()){
-            if(fabs((p.px()+p.py()+p.pz()) - (tempStore.at(igenCand).momentum().px()+tempStore.at(igenCand).momentum().py()+tempStore.at(igenCand).momentum().pz())) < 0.001){
-                retArr.push_back(igenP);  //genParticle instance number;
-                tripwire[igenCand]=1;
+
+	    //            if(fabs((p.px()+p.py()+p.pz()) - (tempStore.at(igenCand).momentum().px()+tempStore.at(igenCand).momentum().py()+tempStore.at(igenCand).momentum().pz())) < 0.001){ // fixed by Y. Kim
+            if(fabs((p.px()+p.py()+p.pz()) - (tempStore.at(igenCand).px()+tempStore.at(igenCand).py()+tempStore.at(igenCand).pz())) < 0.001){
+	      retArr.push_back(igenP);  //genParticle instance number;
+	      tripwire[igenCand]=1;
             }
         }
         if(!tripwire[igenCand]) retArr.push_back(-999);
