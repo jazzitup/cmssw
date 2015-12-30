@@ -53,6 +53,8 @@
 #include "HiAnalysis/HiOnia/interface/MyCommonHistoManager.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 //
 // class declaration
 //
@@ -67,8 +69,8 @@ private:
   virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
-  
-  
+
+  edm::Service<TFileService> fs;  
   void InitEvent();
   void InitTree();
 
@@ -108,6 +110,8 @@ private:
 
   void beginRun(const edm::Run &, const edm::EventSetup &);  
 
+  std::string outputFile_;       // name of output file
+
   TLorentzVector lorentzMomentum(const reco::Candidate::LorentzVector& p);
   // ----------member data ---------------------------
   enum StatBins {
@@ -138,7 +142,7 @@ private:
   float etaMax;
 
   // TFile
-  TFile* fOut;
+  //  TFile* fOut;
 
   // TTree
   TTree* myTree;
@@ -1780,8 +1784,8 @@ HiOniaAnalyzer::InitTree()
     Gen_QQ_mumi_4mom = new TClonesArray("TLorentzVector", 2);
   }
 
-  myTree = new TTree("myTree","My TTree of dimuons");
-  
+  //  myTree = new TTree("myTree","My TTree of dimuons");
+  myTree = fs->make<TTree>("myTree","v1");
   myTree->Branch("eventNb", &eventNb,   "eventNb/i");
   myTree->Branch("runNb",   &runNb,     "runNb/i");
   myTree->Branch("LS",      &lumiSection, "LS/i"); 
@@ -1952,7 +1956,7 @@ HiOniaAnalyzer::InitTree()
 void 
 HiOniaAnalyzer::beginJob()
 {
-  fOut = new TFile(_histfilename.c_str(), "RECREATE");
+  //  fOut = new TFile(_histfilename.c_str(), "RECREATE");
   InitTree();
 
   // book histos
@@ -2029,7 +2033,8 @@ HiOniaAnalyzer::beginJob()
   else
     myRecoGlbMuonHistos->Print();
 
-  hStats = new TH1F("hStats","hStats;;Number of Events",2*NTRIGGERS+1,0,2*NTRIGGERS+1);
+    //  hStats = new TH1F("hStats","hStats;;Number of Events",2*NTRIGGERS+1,0,2*NTRIGGERS+1);
+  hStats = fs->make<TH1F>("hStats","hStats;;Number of Events",2*NTRIGGERS+1,0,2*NTRIGGERS+1);
   hStats->GetXaxis()->SetBinLabel(1,"All");
   for (int i=2; i< (int) theTriggerNames.size()+1; ++i) {
     hStats->GetXaxis()->SetBinLabel(i,theTriggerNames.at(i-1).c_str()); // event info
@@ -2074,6 +2079,7 @@ HiOniaAnalyzer::endJob() {
   std::cout << "Total number of events = " << nEvents << std::endl;
   std::cout << "Total number of passed candidates = " << passedCandidates << std::endl;
 
+  /*
   fOut->cd();
   hStats->Write();
   hCent->Write();
@@ -2107,6 +2113,7 @@ HiOniaAnalyzer::endJob() {
       myRecoJpsiTrkTrkHistos->Write(fOut);
     }
   }
+  */
 
   return;
 }
