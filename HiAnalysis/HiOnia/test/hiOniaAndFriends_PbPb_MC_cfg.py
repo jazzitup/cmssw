@@ -10,9 +10,9 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 # Setup Settings for ONIA TREE:
 
 isPbPb         = True      # if PbPb data/MC: True or if pp data/MC: False    
-isMC           = False     # if input is MONTECARLO: True or if it's DATA: False
-isPromptDATA   = True      # if input is Prompt RECO DATA: True or if it's Express Stream DATA: False
-isPromptMC     = False     # if MC is Prompt Quarkonia: True or if it's Non Prompt Quarkonia: False
+isMC           = True      # if input is MONTECARLO: True or if it's DATA: False
+isPromptDATA   = False     # if input is Prompt RECO DATA: True or if it's Express Stream DATA: False
+isPromptMC     = True      # if MC is Prompt Quarkonia: True or if it's Non Prompt Quarkonia: False
 useExtraColl   = False     # General Tracks + Stand Alone Muons + Converted Photon collections
 applyEventSel  = False     # Only apply Event Selection if the required collections are present 
 muonSelection  = "GlbTrk"  # Single muon selection: Glb(isGlobal), GlbTrk(isGlobal&&isTracker), Trk(isTracker) are availale
@@ -27,8 +27,8 @@ print( " " )
 print( "[INFO] Settings used for ONIA TREE: " )  
 print( "[INFO] isPbPb        = " + ("True" if isPbPb else "False") )  
 print( "[INFO] isMC          = " + ("True" if isMC else "False") )  
-print( "[INFO] isPromptDATA  = " + ("True" if isPromptDATA else "False") )  
-print( "[INFO] isPromptMC    = " + ("True" if isPromptMC else "False") ) 
+print( "[INFO] isPromptDATA  = " + ("True" if isPromptDATA else "False") ) 
+print( "[INFO] isPromptMC    = " + ("True" if isPromptMC else "False") )  
 print( "[INFO] useExtraColl  = " + ("True" if useExtraColl else "False") ) 
 print( "[INFO] applyEventSel = " + ("True" if applyEventSel else "False") )  
 print( "[INFO] muonSelection = " + muonSelection )  
@@ -44,7 +44,7 @@ options = VarParsing.VarParsing ('analysis')
 # Input and Output File Names
 options.outputFile = "OniaTree.root"
 options.secondaryOutputFile = "Jpsi_DataSet.root"
-options.inputFiles = 'file:onia2MuMuPAT_DATA_75X_PbPbPrompt.root'
+options.inputFiles = 'file:onia2MuMuPAT_DATA_75X_PbPb_MC.root'
 
 options.maxEvents = -1 # -1 means all events
 
@@ -52,7 +52,6 @@ options.maxEvents = -1 # -1 means all events
 options.parseArguments()
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
-
 
 # Global Tag
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
@@ -134,6 +133,13 @@ process.hionia = cms.EDAnalyzer('HiOniaAnalyzer',
                                 dataSetName       = cms.string(options.secondaryOutputFile),
 
                                 )
+
+
+#########################
+# Track Analyzer
+#########################
+process.load('HeavyIonsAnalysis.JetAnalysis.ExtraTrackReco_cff')
+process.load('HeavyIonsAnalysis.JetAnalysis.TrkAnalyzers_cff')
 
 ### Only use if prescale warnings are shown.
 #process.hionia.l1GtReadoutRecordInputTag = cms.InputTag("gtDigis","","RECO")
@@ -246,24 +252,24 @@ else:
   process.hionia.srcTracks        = cms.InputTag("generalTracks")       
   process.hionia.muonLessPV       = cms.bool(True)
   
-  # HLT PP MENU: /users/HiMuonTrigDev/pp5TeV/NovDev/V4
+  # HLT PP MENU: FOR RUN 2 PP MC 2015
   
-  process.hionia.dblTriggerPathNames   = cms.vstring("HLT_HIL1DoubleMu0_v1",
-                                                     "HLT_HIL1DoubleMu10_v1",
-                                                     "HLT_HIL2DoubleMu0_NHitQ_v1",
-                                                     "HLT_HIL3DoubleMu0_OS_m2p5to4p5_v1",
-                                                     "HLT_HIL3DoubleMu0_OS_m7to14_v1")
+  process.hionia.dblTriggerPathNames   = cms.vstring("HLT_HIL1DoubleMu0ForPPRef_v1",
+                                                     "HLT_HIL1DoubleMu10ForPPRef_v1",
+                                                     "HLT_HIL2DoubleMu0_NHitQForPPRef_v1",
+                                                     "HLT_HIL3DoubleMu0_OS_m2p5to4p5ForPPRef_v1",
+                                                     "HLT_HIL3DoubleMu0_OS_m7to14ForPPRef_v1")
 
-  process.hionia.sglTriggerPathNames   = cms.vstring("HLT_HIL2Mu3_NHitQ10_v1",
-                                                     "HLT_HIL3Mu3_NHitQ15_v1",
-                                                     "HLT_HIL2Mu5_NHitQ10_v1",
-                                                     "HLT_HIL3Mu5_NHitQ15_v1",
-                                                     "HLT_HIL2Mu7_NHitQ10_v1",
-                                                     "HLT_HIL3Mu7_NHitQ15_v1",
-                                                     "HLT_HIL2Mu15_v1",
-                                                     "HLT_HIL3Mu15_v1",
-                                                     "HLT_HIL2Mu20_v1",
-                                                     "HLT_HIL3Mu20_v1")
+  process.hionia.sglTriggerPathNames   = cms.vstring("HLT_HIL2Mu3_NHitQ10ForPPRef_v1",
+                                                     "HLT_HIL3Mu3_NHitQ15ForPPRef_v1",
+                                                     "HLT_HIL2Mu5_NHitQ10ForPPRef_v1",
+                                                     "HLT_HIL3Mu5_NHitQ15ForPPRef_v1",
+                                                     "HLT_HIL2Mu7_NHitQ10ForPPRef_v1",
+                                                     "HLT_HIL3Mu7_NHitQ15ForPPRef_v1",
+                                                     "HLT_HIL2Mu15ForPPRef_v1",
+                                                     "HLT_HIL3Mu15ForPPRef_v1",
+                                                     "HLT_HIL2Mu20ForPPRef_v1",
+                                                     "HLT_HIL3Mu20ForPPRef_v1")
   
   process.hionia.dblTriggerFilterNames = cms.vstring("hltHIDoubleMu0L1Filtered",
                                                      "hltHIDoubleMu10MinBiasL1Filtered",
@@ -283,28 +289,6 @@ else:
                                                      "hltHIL3SingleMu20L3Filtered")
 
 process.oniaSequence = cms.Sequence(process.hionia)
-
-
-
-
-#########################
-# Track Analyzer pp 
-#########################
-process.load('Configuration.StandardSequences.Services_cff')
-process.load('Configuration.Geometry.GeometryRecoDB_cff')
-process.load('HeavyIonsAnalysis.JetAnalysis.TrkAnalyzers_cff')
-process.ppTrack.qualityStrings = cms.untracked.vstring(['highPurity','tight','loose'])
-process.ppTrack.trackSrc = cms.InputTag("generalTracks")
-process.ppTrack.mvaSrc = cms.string('generalTracks')
-process.ppTrack.pfCandSrc = cms.InputTag('particleFlow')
-process.ppTrack.vertexSrc = cms.vstring('offlinePrimaryVertices')
-
-#########################
-# Track Analyzer PbPb
-#########################
-process.load('HeavyIonsAnalysis.JetAnalysis.ExtraTrackReco_cff')
-process.load('HeavyIonsAnalysis.JetAnalysis.TrkAnalyzers_cff')
-
 
 ##### Event Selection
 if applyEventSel:
@@ -335,7 +319,9 @@ process.source    = cms.Source("PoolSource",
                                )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents) )
 process.options   = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
-
 process.p = cms.Path(process.oniaSequence * process.trackSequencesPbPb)
 process.TFileService = cms.Service("TFileService",
                                    fileName=cms.string("oniaAndFriends.root"))
+
+
+

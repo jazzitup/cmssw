@@ -330,6 +330,6 @@ process.source    = cms.Source("PoolSource",
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents) )
 process.options   = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
-process.p = cms.Path(process.oniaSequence * process.ppTrack)
+process.p = cms.Path(process.oniaSequence * process.trackSequencesPP)
 process.TFileService = cms.Service("TFileService",
-                                   fileName=cms.string("track.root"))
+                                   fileName=cms.string("oniaAndFriends.root"))
