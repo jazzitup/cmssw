@@ -15,7 +15,7 @@ isPromptDATA   = True      # if input is Prompt RECO DATA: True or if it's Expre
 isPromptMC     = False     # if MC is Prompt Quarkonia: True or if it's Non Prompt Quarkonia: False
 useExtraColl   = False     # General Tracks + Stand Alone Muons + Converted Photon collections
 applyEventSel  = False     # Only apply Event Selection if the required collections are present 
-muonSelection  = "Trk"     # Single muon selection: Glb(isGlobal), GlbTrk(isGlobal&&isTracker), Trk(isTracker) are availale
+muonSelection  = "Trk"  # Single muon selection: Glb(isGlobal), GlbTrk(isGlobal&&isTracker), Trk(isTracker) are availale
 genPDG         = 443       # Generated Particle PDG ID (only needed for MC), Jpsi: 443 , Psi(2S): 100443, Upsilon(1S): 553 , Upsilon(2S): 100553 , Upsilon(2S): 200553
 
 #----------------------------------------------------------------------------
@@ -42,10 +42,9 @@ process = cms.Process("HIOnia")
 options = VarParsing.VarParsing ('analysis')
 
 # Input and Output File Names
-options.outputFile = "OniaTree_pp.root"
+options.outputFile = "OniaTree.root"
 options.secondaryOutputFile = "Jpsi_DataSet.root"
-#options.inputFiles = 'file:onia2MuMuPAT_DATA_75X_PbPbPrompt.root'
-options.inputFiles = 'file:/xrootd/store/user/goni/PromptReco/DoubleMu_Run2015E-PromptReco-v1_Run_262081_262328_ONIASKIM_160106/DoubleMu/DoubleMu_Run2015E-PromptReco-v1_Run_262081_262328_ONIASKIM_160106/160106_061714/0000/onia2MuMuPAT_DATA_75X_1.root'
+options.inputFiles = 'file:onia2MuMuPAT_DATA_75X_PbPbPrompt.root'
 
 options.maxEvents = -1 # -1 means all events
 
@@ -296,7 +295,7 @@ process.load('Configuration.Geometry.GeometryRecoDB_cff')
 process.load('HeavyIonsAnalysis.JetAnalysis.TrkAnalyzers_cff')
 process.ppTrack.qualityStrings = cms.untracked.vstring(['highPurity','tight','loose'])
 process.ppTrack.trackSrc = cms.InputTag("generalTracks")
-process.ppTrack.mvaSrc = cms.string('generalTracks')
+process.ppTrack.mvaSrc = cms.InputTag('generalTracks','MVAVals')
 process.ppTrack.pfCandSrc = cms.InputTag('particleFlow')
 process.ppTrack.vertexSrc = cms.vstring('offlinePrimaryVertices')
 
